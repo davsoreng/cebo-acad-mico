@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visor de Documentos - Universidad</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Pantalla 1: El Cebo (Lo que cabría esperar) */
+    #pantalla-cebo {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 380px;
+      width: 90%;
+    }
+    .icono-pdf { font-size: 50px; margin-bottom: 15px; }
+    .btn-descarga {
+      background-color: #0066cc;
+      color: white;
+      border: none;
+      padding: 14px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+      width: 100%;
+    }
+
+    /* Pantalla 2: Simulación de Control Remoto (Lo que realmente ocurre) */
+    #pantalla-ataque {
+      display: none;
+      background-color: #0a0a0a;
+      color: #00ff41;
+      font-family: 'Courier New', Courier, monospace;
+      width: 100vw;
+      height: 100vh;
+      padding: 20px;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .alerta-roja {
+      background-color: #ff1e1e;
+      color: white;
+      padding: 12px;
+      text-align: center;
+      font-weight: bold;
+      border-radius: 6px;
+      animation: parpadeo 0.8s infinite alternate;
+    }
+    @keyframes parpadeo {
+      from { opacity: 1; }
+      to { opacity: 0.4; }
+    }
+    #consola {
+      margin-top: 15px;
+      font-size: 14px;
+      line-height: 1.5;
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+    .barra-progreso {
+      width: 100%;
+      background: #222;
+      height: 18px;
+      border-radius: 4px;
+      margin: 15px 0;
+      overflow: hidden;
+      border: 1px solid #00ff41;
+    }
+    #progreso-interno {
+      width: 0%;
+      height: 100%;
+      background: #ff1e1e;
+      transition: width 0.3s;
+    }
+    #aviso-academico {
+      display: none;
+      background: #1a1a1a;
+      border: 2px solid #ffcc00;
+      color: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: sans-serif;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PANTALLA 1: CEBO APARENTEMENTE LEGÍTIMO -->
+  <div id="pantalla-cebo">
+    <div class="icono-pdf">📄</div>
+    <h3>Apuntes_Redes_Tema4.pdf</h3>
+    <p style="color: #666; font-size: 14px; margin-top: 8px;">
+      Tamaño: 2.4 MB • Documento verificado
+    </p>
+    <button class="btn-descarga" onclick="iniciarSimulacion()">
+      Abrir documento ahora
+    </button>
+  </div>
+
+  <!-- PANTALLA 2: SIMULACIÓN DE CONTROL DE DISPOSITIVO -->
+  <div id="pantalla-ataque">
+    <div class="alerta-roja">
+      ⚠️ CONTROL REMOTO DE DISPOSITIVO ACTIVO ⚠️
+    </div>
+
+    <div id="consola"></div>
+
+    <div>
+      <p style="font-size: 12px;">Extrayendo telemetría y sesión del sistema...</p>
+      <div class="barra-progreso">
+        <div id="progreso-interno"></div>
+      </div>
+    </div>
+
+    <!-- Explicación académica que aparece al terminar la barra -->
+    <div id="aviso-academico">
+      <h4 style="color: #ffcc00; margin-bottom: 6px;">🎓 Práctica Académica - Fundamentos de Redes</h4>
+      <p>Esto ha sido una <strong>simulación inofensiva de Quishing / Ingeniería Social</strong>. Ningún dato ha sido enviado ni almacenado.</p>
+      <p style="margin-top: 6px; font-size: 12px; color: #ccc;">
+        Demostración: Al hacer clic tras escanear un QR desconocido, una web puede activar la pantalla completa, vibrar el hardware, usar el sintetizador de voz y leer la telemetría del navegador.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    async function iniciarSimulacion() {
+      // 1. Cambiar de pantalla
+      document.getElementById('pantalla-cebo').style.display = 'none';
+      const pantallaAtaque = document.getElementById('pantalla-ataque');
+      pantallaAtaque.style.display = 'flex';
+
+      // 2. Forzar Pantalla Completa (parece que el móvil queda bloqueado)
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+
+      // 3. Hacer vibrar el móvil (funciona en Android)
+      if (navigator.vibrate) {
+        navigator.vibrate([400, 150, 400, 150, 800]);
+      }
+
+      // 4. Hacer hablar al teléfono con voz del sistema
+      if ('speechSynthesis' in window) {
+        const voz = new SpeechSynthesisUtterance("Alerta de seguridad. Acceso remoto no autorizado detectado.");
+        voz.lang = 'es-ES';
+        voz.rate = 1.05;
+        window.speechSynthesis.speak(voz);
+      }
+
+      // 5. Recopilar datos reales del dispositivo para mostrarlos en la consola
+      let bateriaInfo = "No disponible (Protegido)";
+      if (navigator.getBattery) {
+        const bat = await navigator.getBattery();
+        bateriaInfo = `${Math.round(bat.level * 100)}% (${bat.charging ? 'Cargando' : 'En uso'})`;
+      }
+
+      // Crear cookie simulada en el propio dominio
+      document.cookie = "token_sesion_demo=USR_99812_COMPROMETIDO; path=/";
+
+      const lineas = [
+        "[+] Conectando con el host local...",
+        `[+] Dispositivo: ${navigator.platform} (${navigator.language})`,
+        `[+] Navegador: ${navigator.userAgent.substring(0, 65)}...`,
+        `[+] Resolución de pantalla: ${window.screen.width}x${window.screen.height} px`,
+        `[+] Núcleos de CPU detectados: ${navigator.hardwareConcurrency || 'Desconocido'}`,
+        `[+] Estado de batería del sistema: ${bateriaInfo}`,
+        `[+] Historial de pestaña interceptado: ${window.history.length} entradas`,
+        `[+] Cookie de sesión leída: ${document.cookie}`,
+        "[!] Tomando control de la interfaz gráfica..."
+      ];
+
+      const consola = document.getElementById('consola');
+      const barra = document.getElementById('progreso-interno');
+
+      // Imprimir líneas una a una como si un hacker escribiera en vivo
+      lineas.forEach((texto, i) => {
+        setTimeout(() => {
+          consola.innerHTML += texto + "<br><br>";
+          barra.style.width = `${((i + 1) / lineas.length) * 100}%`;
+
+          // Al llegar al final, mostrar el cartel educativo
+          if (i === lineas.length - 1) {
+            setTimeout(() => {
+              document.getElementById('aviso-academico').style.display = 'block';
+            }, 800);
+          }
+        }, i * 650);
+      });
+    }
+  </script>
+</body>
+</html>
